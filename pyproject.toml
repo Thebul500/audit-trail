@@ -25,7 +25,7 @@ dependencies = [
 audit-trail = "audit_trail.app:create_app"
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "pytest-asyncio", "httpx", "ruff", "mypy", "bandit"]
+dev = ["pytest", "pytest-cov", "pytest-asyncio", "httpx", "aiosqlite", "ruff", "mypy", "bandit"]
 
 [tool.ruff]
 line-length = 100
