@@ -1,0 +1,175 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-03-06T00:00:00Z",
+    "component": {
+      "type": "application",
+      "name": "audit-trail",
+      "version": "0.1.0",
+      "description": "Immutable audit logging service. Tamper-evident event logging with hash chains, REST API for ingestion/search/export, retention policies, webhook notifications. FastAPI + PostgreSQL.",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:pypi/audit-trail@0.1.0"
+    },
+    "tools": [
+      {
+        "name": "claude-code",
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "fastapi",
+      "version": "0.110",
+      "purl": "pkg:pypi/fastapi@0.110",
+      "scope": "required",
+      "description": "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
+    },
+    {
+      "type": "library",
+      "name": "uvicorn",
+      "version": "0.29",
+      "purl": "pkg:pypi/uvicorn@0.29",
+      "scope": "required",
+      "description": "The lightning-fast ASGI server"
+    },
+    {
+      "type": "library",
+      "name": "sqlalchemy",
+      "version": "2.0",
+      "purl": "pkg:pypi/sqlalchemy@2.0",
+      "scope": "required",
+      "description": "Database Abstraction Library"
+    },
+    {
+      "type": "library",
+      "name": "asyncpg",
+      "version": "0.29",
+      "purl": "pkg:pypi/asyncpg@0.29",
+      "scope": "required",
+      "description": "An asyncio PostgreSQL driver"
+    },
+    {
+      "type": "library",
+      "name": "alembic",
+      "version": "1.13",
+      "purl": "pkg:pypi/alembic@1.13",
+      "scope": "required",
+      "description": "A database migration tool for SQLAlchemy"
+    },
+    {
+      "type": "library",
+      "name": "pydantic-settings",
+      "version": "2.2",
+      "purl": "pkg:pypi/pydantic-settings@2.2",
+      "scope": "required",
+      "description": "Settings management using Pydantic"
+    },
+    {
+      "type": "library",
+      "name": "python-jose",
+      "version": "3.3",
+      "purl": "pkg:pypi/python-jose@3.3",
+      "scope": "required",
+      "description": "JOSE implementation in Python"
+    },
+    {
+      "type": "library",
+      "name": "passlib",
+      "version": "1.7",
+      "purl": "pkg:pypi/passlib@1.7",
+      "scope": "required",
+      "description": "Comprehensive password hashing framework supporting over 30 schemes"
+    },
+    {
+      "type": "library",
+      "name": "httpx",
+      "version": "0.27",
+      "purl": "pkg:pypi/httpx@0.27",
+      "scope": "required",
+      "description": "A fully featured HTTP client for Python 3"
+    },
+    {
+      "type": "library",
+      "name": "pytest",
+      "version": "latest",
+      "purl": "pkg:pypi/pytest",
+      "scope": "optional",
+      "description": "Simple powerful testing with Python"
+    },
+    {
+      "type": "library",
+      "name": "pytest-cov",
+      "version": "latest",
+      "purl": "pkg:pypi/pytest-cov",
+      "scope": "optional",
+      "description": "Pytest plugin for measuring coverage"
+    },
+    {
+      "type": "library",
+      "name": "pytest-asyncio",
+      "version": "latest",
+      "purl": "pkg:pypi/pytest-asyncio",
+      "scope": "optional",
+      "description": "Pytest support for asyncio"
+    },
+    {
+      "type": "library",
+      "name": "aiosqlite",
+      "version": "latest",
+      "purl": "pkg:pypi/aiosqlite",
+      "scope": "optional",
+      "description": "asyncio bridge to the standard sqlite3 module"
+    },
+    {
+      "type": "library",
+      "name": "ruff",
+      "version": "latest",
+      "purl": "pkg:pypi/ruff",
+      "scope": "optional",
+      "description": "An extremely fast Python linter and code formatter"
+    },
+    {
+      "type": "library",
+      "name": "mypy",
+      "version": "latest",
+      "purl": "pkg:pypi/mypy",
+      "scope": "optional",
+      "description": "Optional static typing for Python"
+    },
+    {
+      "type": "library",
+      "name": "bandit",
+      "version": "latest",
+      "purl": "pkg:pypi/bandit",
+      "scope": "optional",
+      "description": "Security oriented static analyser for Python code"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:pypi/audit-trail@0.1.0",
+      "dependsOn": [
+        "pkg:pypi/fastapi@0.110",
+        "pkg:pypi/uvicorn@0.29",
+        "pkg:pypi/sqlalchemy@2.0",
+        "pkg:pypi/asyncpg@0.29",
+        "pkg:pypi/alembic@1.13",
+        "pkg:pypi/pydantic-settings@2.2",
+        "pkg:pypi/python-jose@3.3",
+        "pkg:pypi/passlib@1.7",
+        "pkg:pypi/httpx@0.27"
+      ]
+    }
+  ]
+}
