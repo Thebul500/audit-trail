@@ -1,6 +1,5 @@
 """Tests for SQLAlchemy models."""
 
-from sqlalchemy import inspect
 
 from audit_trail.database import Base
 from audit_trail.models import BaseModel

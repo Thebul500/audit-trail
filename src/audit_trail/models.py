@@ -1,8 +1,7 @@
 """SQLAlchemy database models."""
 
-import datetime
 
-from sqlalchemy import Column, DateTime, Integer, String, Text
+from sqlalchemy import Column, DateTime, Integer
 from sqlalchemy.sql import func
 
 from .database import Base
