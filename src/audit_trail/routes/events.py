@@ -47,7 +47,7 @@ async def create_event(
         .limit(1)
     )
     last_event = result.scalar_one_or_none()
-    previous_hash = last_event.hash if last_event else "0" * 64
+    previous_hash: str = str(last_event.hash) if last_event else "0" * 64
 
     now = datetime.now(timezone.utc)
     event_hash = compute_hash(
@@ -89,7 +89,7 @@ async def list_events(
     events = result.scalars().all()
     count_result = await db.execute(select(func.count()).select_from(AuditEvent))
     total = count_result.scalar()
-    return EventList(items=events, total=total)
+    return EventList(items=list(events), total=total or 0)  # type: ignore[arg-type]
 
 
 @router.get("/events/{event_id}", response_model=EventResponse)

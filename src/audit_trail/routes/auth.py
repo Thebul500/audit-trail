@@ -31,7 +31,7 @@ async def register(req: RegisterRequest, db: AsyncSession = Depends(get_db)):
     db.add(api_key)
     await db.commit()
     await db.refresh(api_key)
-    return RegisterResponse(id=api_key.id, name=api_key.name, api_key=raw_key)
+    return RegisterResponse(id=str(api_key.id), name=str(api_key.name), api_key=raw_key)
 
 
 @router.post("/token", response_model=TokenResponse)
@@ -40,7 +40,7 @@ async def get_token(req: TokenRequest, db: AsyncSession = Depends(get_db)):
     keys = result.scalars().all()
 
     for key in keys:
-        if verify_key(req.api_key, key.key_hash):
+        if verify_key(req.api_key, str(key.key_hash)):
             token = create_access_token({"sub": key.id, "scopes": key.scopes})
             return TokenResponse(access_token=token)
 
