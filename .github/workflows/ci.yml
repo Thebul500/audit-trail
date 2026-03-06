@@ -31,7 +31,22 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e .[dev]
-      - run: pytest --cov=src/audit_trail -v
-      - run: ruff check src/
-      - run: mypy src/audit_trail/ --ignore-missing-imports
-      - run: bandit -r src/audit_trail/ -q  # security
+
+      - name: Run tests with coverage
+        run: pytest --cov=audit_trail --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=80 -v
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+      - name: Lint
+        run: ruff check src/
+
+      - name: Type check
+        run: mypy src/audit_trail/ --ignore-missing-imports
+
+      - name: Security scan
+        run: bandit -r src/audit_trail/ -q
