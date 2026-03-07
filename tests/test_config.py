@@ -8,7 +8,10 @@ from audit_trail.config import Settings, settings
 
 def test_default_settings():
     """Settings have expected defaults."""
-    s = Settings()
+    with patch.dict(os.environ):
+        for k in [k for k in os.environ if k.startswith("AUDIT_TRAIL_")]:
+            os.environ.pop(k)
+        s = Settings()
     assert "sqlite+aiosqlite" in s.database_url
     assert s.secret_key == "change-me-in-production"
     assert s.access_token_expire_minutes == 30
