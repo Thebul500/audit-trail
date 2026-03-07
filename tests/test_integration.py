@@ -176,6 +176,128 @@ class TestEvents:
         )
         assert resp.status_code == 422
 
+    def test_create_event_empty_string_returns_422(self, client):
+        headers = _auth_headers(client)
+        resp = client.post(
+            "/api/v1/events",
+            json={
+                "stream_id": "",
+                "actor": "admin",
+                "action": "test",
+                "resource_type": "x",
+                "resource_id": "1",
+            },
+            headers=headers,
+        )
+        assert resp.status_code == 422
+
+    def test_filter_events_by_stream(self, client):
+        headers = _auth_headers(client)
+        for stream in ("alpha", "beta"):
+            client.post(
+                "/api/v1/events",
+                json={
+                    "stream_id": stream,
+                    "actor": "sys",
+                    "action": "test.run",
+                    "resource_type": "test",
+                    "resource_id": "1",
+                },
+                headers=headers,
+            )
+        resp = client.get("/api/v1/events?stream_id=alpha", headers=headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert all(e["stream_id"] == "alpha" for e in data["items"])
+
+    def test_filter_events_by_actor(self, client):
+        headers = _auth_headers(client)
+        client.post(
+            "/api/v1/events",
+            json={
+                "stream_id": "s",
+                "actor": "alice@test.com",
+                "action": "login",
+                "resource_type": "session",
+                "resource_id": "s-1",
+            },
+            headers=headers,
+        )
+        resp = client.get("/api/v1/events?actor=alice@test.com", headers=headers)
+        assert resp.status_code == 200
+        assert all(e["actor"] == "alice@test.com" for e in resp.json()["items"])
+
+
+# ---------------------------------------------------------------------------
+# Stream Verification
+# ---------------------------------------------------------------------------
+
+
+class TestVerification:
+    def test_verify_valid_stream(self, client):
+        headers = _auth_headers(client)
+        for i in range(3):
+            client.post(
+                "/api/v1/events",
+                json={
+                    "stream_id": "verify-me",
+                    "actor": "sys",
+                    "action": f"step.{i}",
+                    "resource_type": "job",
+                    "resource_id": "j-1",
+                },
+                headers=headers,
+            )
+        resp = client.get("/api/v1/streams/verify-me/verify", headers=headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["valid"] is True
+        assert data["total_events"] == 3
+        assert data["broken_links"] == []
+
+    def test_verify_nonexistent_stream_returns_404(self, client):
+        headers = _auth_headers(client)
+        resp = client.get("/api/v1/streams/no-such-stream/verify", headers=headers)
+        assert resp.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# CSV Export
+# ---------------------------------------------------------------------------
+
+
+class TestExport:
+    def test_export_csv(self, client):
+        headers = _auth_headers(client)
+        client.post(
+            "/api/v1/events",
+            json={
+                "stream_id": "export-test",
+                "actor": "admin",
+                "action": "doc.created",
+                "resource_type": "document",
+                "resource_id": "d-1",
+            },
+            headers=headers,
+        )
+        resp = client.get(
+            "/api/v1/events/export/csv?stream_id=export-test", headers=headers
+        )
+        assert resp.status_code == 200
+        assert "text/csv" in resp.headers["content-type"]
+        lines = resp.text.strip().split("\n")
+        assert len(lines) >= 2  # header + at least one row
+        assert lines[0].startswith("id,")
+
+    def test_export_csv_empty(self, client):
+        headers = _auth_headers(client)
+        resp = client.get(
+            "/api/v1/events/export/csv?stream_id=nonexistent", headers=headers
+        )
+        assert resp.status_code == 200
+        lines = resp.text.strip().split("\n")
+        assert len(lines) == 1  # header only
+
 
 # ---------------------------------------------------------------------------
 # Retention Policies CRUD (POST + GET + PUT)

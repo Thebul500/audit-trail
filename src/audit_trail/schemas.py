@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class HealthResponse(BaseModel):
@@ -18,11 +18,11 @@ class HealthResponse(BaseModel):
 
 
 class EventCreate(BaseModel):
-    stream_id: str
-    actor: str
-    action: str
-    resource_type: str
-    resource_id: str
+    stream_id: str = Field(..., min_length=1, max_length=255)
+    actor: str = Field(..., min_length=1, max_length=255)
+    action: str = Field(..., min_length=1, max_length=255)
+    resource_type: str = Field(..., min_length=1, max_length=255)
+    resource_id: str = Field(..., min_length=1, max_length=255)
     payload: dict[str, Any] = {}
 
 
@@ -46,11 +46,18 @@ class EventList(BaseModel):
     total: int
 
 
+class VerifyResponse(BaseModel):
+    stream_id: str
+    total_events: int
+    valid: bool
+    broken_links: list[dict]
+
+
 # --- Auth ---
 
 
 class RegisterRequest(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=255)
     scopes: list[str] = ["events:read"]
 
 
@@ -73,8 +80,8 @@ class TokenResponse(BaseModel):
 
 
 class RetentionPolicyCreate(BaseModel):
-    stream_id: str
-    max_age_days: int
+    stream_id: str = Field(..., min_length=1, max_length=255)
+    max_age_days: int = Field(..., gt=0)
 
 
 class RetentionPolicyUpdate(BaseModel):
@@ -98,8 +105,8 @@ class RetentionPolicyResponse(BaseModel):
 
 
 class WebhookCreate(BaseModel):
-    url: str
-    event_filter: str
+    url: str = Field(..., min_length=1, max_length=2048)
+    event_filter: str = Field(..., min_length=1, max_length=255)
     secret: str | None = None
 
 
