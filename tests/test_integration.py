@@ -227,6 +227,64 @@ class TestEvents:
         assert resp.status_code == 200
         assert all(e["actor"] == "alice@test.com" for e in resp.json()["items"])
 
+    def test_filter_events_by_action(self, client):
+        headers = _auth_headers(client)
+        client.post(
+            "/api/v1/events",
+            json={
+                "stream_id": "s",
+                "actor": "admin",
+                "action": "file.uploaded",
+                "resource_type": "file",
+                "resource_id": "f-1",
+            },
+            headers=headers,
+        )
+        resp = client.get("/api/v1/events?action=file.uploaded", headers=headers)
+        assert resp.status_code == 200
+        assert all(e["action"] == "file.uploaded" for e in resp.json()["items"])
+
+    def test_filter_events_by_resource_type_and_id(self, client):
+        headers = _auth_headers(client)
+        client.post(
+            "/api/v1/events",
+            json={
+                "stream_id": "s",
+                "actor": "admin",
+                "action": "item.created",
+                "resource_type": "invoice",
+                "resource_id": "inv-99",
+            },
+            headers=headers,
+        )
+        resp = client.get(
+            "/api/v1/events?resource_type=invoice&resource_id=inv-99", headers=headers
+        )
+        assert resp.status_code == 200
+        items = resp.json()["items"]
+        assert len(items) >= 1
+        assert all(e["resource_type"] == "invoice" for e in items)
+
+    def test_filter_events_by_time_range(self, client):
+        headers = _auth_headers(client)
+        client.post(
+            "/api/v1/events",
+            json={
+                "stream_id": "time-test",
+                "actor": "sys",
+                "action": "tick",
+                "resource_type": "clock",
+                "resource_id": "c-1",
+            },
+            headers=headers,
+        )
+        resp = client.get(
+            "/api/v1/events?since=2000-01-01T00:00:00Z&until=2099-12-31T23:59:59Z",
+            headers=headers,
+        )
+        assert resp.status_code == 200
+        assert resp.json()["total"] >= 1
+
 
 # ---------------------------------------------------------------------------
 # Stream Verification
@@ -288,6 +346,29 @@ class TestExport:
         lines = resp.text.strip().split("\n")
         assert len(lines) >= 2  # header + at least one row
         assert lines[0].startswith("id,")
+
+    def test_export_csv_with_filters(self, client):
+        headers = _auth_headers(client)
+        client.post(
+            "/api/v1/events",
+            json={
+                "stream_id": "csv-filter",
+                "actor": "bob@test.com",
+                "action": "report.generated",
+                "resource_type": "report",
+                "resource_id": "r-1",
+            },
+            headers=headers,
+        )
+        resp = client.get(
+            "/api/v1/events/export/csv?actor=bob@test.com&action=report.generated"
+            "&since=2000-01-01T00:00:00Z&until=2099-12-31T23:59:59Z",
+            headers=headers,
+        )
+        assert resp.status_code == 200
+        assert "text/csv" in resp.headers["content-type"]
+        lines = resp.text.strip().split("\n")
+        assert len(lines) >= 2
 
     def test_export_csv_empty(self, client):
         headers = _auth_headers(client)
