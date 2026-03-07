@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings loaded from environment."""
 
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/audit_trail"
+    database_url: str = "sqlite+aiosqlite:///./audit_trail.db"
     secret_key: str = "change-me-in-production"
     access_token_expire_minutes: int = 30
     debug: bool = False

@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import __version__
+from .database import Base, engine
 from .routes.auth import router as auth_router
 from .routes.events import router as events_router
 from .routes.health import router as health_router
@@ -16,6 +17,10 @@ from .routes.webhooks import router as webhooks_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan: startup and shutdown."""
+    from . import models  # noqa: F401 — ensure models are registered
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     yield
 
 

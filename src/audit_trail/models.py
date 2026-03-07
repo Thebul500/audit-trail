@@ -33,7 +33,7 @@ class AuditEvent(Base):
     payload = Column(JSON, default=dict)
     hash = Column(String(64), nullable=False)
     previous_hash = Column(String(64), nullable=False)
-    created_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False)
 
 
 class APIKey(Base):
@@ -47,10 +47,10 @@ class APIKey(Base):
     scopes = Column(JSON, default=list)
     is_active = Column(Boolean, default=True)
     created_at = Column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
     updated_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
@@ -66,10 +66,10 @@ class RetentionPolicy(Base):
     max_age_days = Column(Integer, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
     updated_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
@@ -86,10 +86,10 @@ class WebhookSubscription(Base):
     event_filter = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
     updated_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )

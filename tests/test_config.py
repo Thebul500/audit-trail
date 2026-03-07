@@ -9,7 +9,7 @@ from audit_trail.config import Settings, settings
 def test_default_settings():
     """Settings have expected defaults."""
     s = Settings()
-    assert "postgresql+asyncpg" in s.database_url
+    assert "sqlite+aiosqlite" in s.database_url
     assert s.secret_key == "change-me-in-production"
     assert s.access_token_expire_minutes == 30
     assert s.debug is False
