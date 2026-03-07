@@ -8,8 +8,11 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .config import settings
+from .database import get_db
 
 ALGORITHM = "HS256"
 
@@ -36,17 +39,31 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
+    from .models import APIKey
+
     try:
         payload: dict[str, Any] = jwt.decode(
             credentials.credentials, settings.secret_key, algorithms=[ALGORITHM]
         )
-        if payload.get("sub") is None:
+        sub = payload.get("sub")
+        if sub is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
             )
-        return payload
     except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         )
+
+    result = await db.execute(
+        select(APIKey).where(APIKey.id == sub, APIKey.is_active.is_(True))
+    )
+    api_key = result.scalar_one_or_none()
+    if api_key is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="API key revoked or not found"
+        )
+
+    return payload
