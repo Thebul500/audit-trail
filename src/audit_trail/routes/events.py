@@ -6,7 +6,7 @@ import io
 import json
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -187,8 +187,8 @@ async def verify_stream(
             str(event.action),
             str(event.resource_type),
             str(event.resource_id),
-            event.payload or {},
-            created_at,
+            dict(event.payload or {}),
+            created_at,  # type: ignore[arg-type]
         )
         if str(event.hash) != expected_hash:
             broken_links.append({

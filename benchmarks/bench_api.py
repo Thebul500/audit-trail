@@ -6,7 +6,6 @@ Uses FastAPI TestClient for in-process benchmarking (no network overhead).
 
 import json
 import statistics
-import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -113,10 +112,10 @@ def main():
         results.append(stats)
 
         # Scenario 3: GET /health — concurrent (10 workers)
-        print(f"  Warming up concurrent...", flush=True)
+        print("  Warming up concurrent...", flush=True)
         measure_concurrent(client, "GET", "/health", total=100, workers=CONCURRENT_WORKERS)
 
-        print(f"  Running concurrent...", flush=True)
+        print("  Running concurrent...", flush=True)
         wall_start = time.perf_counter()
         latencies = measure_concurrent(
             client, "GET", "/health",
