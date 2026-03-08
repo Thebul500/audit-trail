@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-audit-trail = "audit_trail.app:create_app"
+audit-trail = "audit_trail.app:app"
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "pytest-asyncio", "httpx", "aiosqlite", "ruff", "mypy", "bandit"]
